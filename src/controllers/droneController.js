@@ -26,4 +26,34 @@ const getAllDrones = async (req, res) => {
   }
 };
 
-module.exports = { createDrone, getAllDrones };
+const updateDrone = async (req, res) => {
+  const { id } = req.params;
+  const { name, drone_type, make_name } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const drone = await Drone.findById(id);
+
+    if (!drone) {
+      return res.status(404).json({ message: "Drone not found" });
+    }
+
+    if (drone.created_by.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this drone" });
+    }
+
+    drone.name = name;
+    drone.drone_type = drone_type;
+    drone.make_name = make_name;
+
+    await drone.save();
+
+    res.json(drone);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating drone", error });
+  }
+};
+
+module.exports = { createDrone, getAllDrones, updateDrone };
