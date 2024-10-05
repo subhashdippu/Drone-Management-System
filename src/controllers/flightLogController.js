@@ -1,6 +1,7 @@
 const FlightLog = require("../models/flightLog");
 const Mission = require("../models/Mission");
 const Drone = require("../models/Drone");
+const PDFDocument = require("pdfkit");
 const createFlightLog = async (req, res) => {
   const { flight_id, status, data } = req.body;
   const userId = req.user._id;
@@ -41,6 +42,25 @@ const createFlightLog = async (req, res) => {
   }
 };
 
+const getFlightLogById = async (req, res) => {
+  const { flightId } = req.params;
+
+  try {
+    const flightLog = await FlightLog.findOne({ flight_id: flightId })
+      .populate("mission_id")
+      .populate("drone_id");
+
+    if (!flightLog) {
+      return res.status(404).json({ message: "Flight log not found" });
+    }
+
+    res.json(flightLog);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching flight log", error });
+  }
+};
+
 module.exports = {
   createFlightLog,
+  getFlightLogById,
 };
