@@ -95,9 +95,41 @@ const deleteMission = async (req, res) => {
   }
 };
 
+const startMissionSimulation = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const mission = await Mission.find({ user: req.user._id });
+    if (mission.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No missions found for this user" });
+    }
+    if (!mission) {
+      return res.status(404).json({ message: "Mission not found" });
+    }
+
+    if (mission.simulation === "active") {
+      return res
+        .status(400)
+        .json({ message: "Mission simulation is already active" });
+    }
+
+    mission.simulation = "active";
+    await mission.save();
+
+    res.json({ message: "Mission simulation started successfully", mission });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error starting mission simulation", error });
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
   updateMission,
   deleteMission,
+  startMissionSimulation,
 };

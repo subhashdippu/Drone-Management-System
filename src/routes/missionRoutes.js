@@ -15,5 +15,6 @@ router.post("/", createMission);
 router.get("/", getAllMissions);
 router.put("/:id", updateMission);
 router.delete("/:id", deleteMission);
+router.post("/:id/start", startMissionSimulation);
 
 module.exports = router;
