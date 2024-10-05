@@ -17,4 +17,13 @@ const createDrone = async (req, res) => {
   }
 };
 
-module.exports = { createDrone };
+const getAllDrones = async (req, res) => {
+  try {
+    const drones = await Drone.find({ created_by: req.user._id });
+    res.json(drones);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching drones", error });
+  }
+};
+
+module.exports = { createDrone, getAllDrones };
