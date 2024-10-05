@@ -60,7 +60,37 @@ const getFlightLogById = async (req, res) => {
   }
 };
 
+const updateFlightLog = async (req, res) => {
+  const { id } = req.params;
+  const { status, data } = req.body;
+
+  try {
+    const flightLog = await FlightLog.findById(id)
+      .populate("mission_id")
+      .populate("drone_id");
+
+    if (!flightLog) {
+      return res.status(404).json({ message: "Flight log not found" });
+    }
+
+    if (!flightLog.mission_id.user.equals(req.user._id)) {
+      return res.status(403).json({
+        message: "You do not have permission to update this flight log",
+      });
+    }
+
+    flightLog.status = status !== undefined ? status : flightLog.status;
+    flightLog.data = data !== undefined ? data : flightLog.data;
+
+    await flightLog.save();
+    res.json(flightLog);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating flight log", error });
+  }
+};
+
 module.exports = {
   createFlightLog,
   getFlightLogById,
+  updateFlightLog,
 };
