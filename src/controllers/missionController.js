@@ -70,8 +70,34 @@ const updateMission = async (req, res) => {
   }
 };
 
+const deleteMission = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+
+  try {
+    const mission = await Mission.findById(id);
+
+    if (!mission) {
+      return res.status(404).json({ message: "Mission not found" });
+    }
+
+    if (mission.user.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this mission" });
+    }
+
+    await Mission.findByIdAndDelete(id);
+
+    res.json({ message: "Mission deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting mission", error });
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
   updateMission,
+  deleteMission,
 };
