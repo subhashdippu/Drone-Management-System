@@ -31,6 +31,16 @@ const createMission = async (req, res) => {
   }
 };
 
+const getAllMissions = async (req, res) => {
+  try {
+    const missions = await Mission.find({ user: req.user._id });
+    res.json(missions);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching missions", error });
+  }
+};
+
 module.exports = {
   createMission,
+  getAllMissions,
 };
