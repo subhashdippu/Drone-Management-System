@@ -16,7 +16,7 @@ app.use("/auth", authRoutes);
 app.use("/drones", droneRoutes);
 app.use("/missions", missionRoutes);
 
-const PORT = process.env.PORT || 4001;
+const PORT = process.env.PORT || 4002;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

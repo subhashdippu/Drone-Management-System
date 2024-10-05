@@ -126,10 +126,44 @@ const startMissionSimulation = async (req, res) => {
   }
 };
 
+const stopMissionSimulation = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const mission = await Mission.find({ user: userId });
+
+    if (mission.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No missions found for this user" });
+    }
+
+    if (!mission) {
+      return res.status(404).json({ message: "Mission not found" });
+    }
+
+    if (mission.simulation === "closed") {
+      return res
+        .status(400)
+        .json({ message: "Mission simulation is already closed" });
+    }
+
+    mission.simulation = "closed";
+    await mission.save();
+
+    res.json({ message: "Mission simulation stopped successfully", mission });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error stopping mission simulation", error });
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
   updateMission,
   deleteMission,
   startMissionSimulation,
+  stopMissionSimulation,
 };

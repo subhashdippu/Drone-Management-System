@@ -4,6 +4,8 @@ const {
   getAllMissions,
   updateMission,
   deleteMission,
+  startMissionSimulation,
+  stopMissionSimulation,
 } = require("../controllers/missionController");
 const authMiddleware = require("../middleware/authMiddleware");
 
@@ -16,5 +18,6 @@ router.get("/", getAllMissions);
 router.put("/:id", updateMission);
 router.delete("/:id", deleteMission);
 router.post("/:id/start", startMissionSimulation);
+router.post("/:id/stop", stopMissionSimulation);
 
 module.exports = router;
