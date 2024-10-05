@@ -40,7 +40,38 @@ const getAllMissions = async (req, res) => {
   }
 };
 
+const updateMission = async (req, res) => {
+  const { id } = req.params;
+  const { name, waypoints, altitude, speed } = req.body;
+  const userId = req.user._id;
+
+  try {
+    const mission = await Mission.findById(id);
+
+    if (!mission) {
+      return res.status(404).json({ message: "Mission not found" });
+    }
+
+    if (mission.user.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this mission" });
+    }
+
+    const updatedMission = await Mission.findByIdAndUpdate(
+      id,
+      { name, waypoints, altitude, speed },
+      { new: true }
+    );
+
+    res.json(updatedMission);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating mission", error });
+  }
+};
+
 module.exports = {
   createMission,
   getAllMissions,
+  updateMission,
 };
