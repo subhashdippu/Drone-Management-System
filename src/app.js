@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const droneRoutes = require("./routes/droneRoutes");
-
+const missionRoutes = require("./routes/missionRoutes");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -14,6 +14,7 @@ connectDB();
 app.use(bodyParser.json());
 app.use("/auth", authRoutes);
 app.use("/drones", droneRoutes);
+app.use("/missions", missionRoutes);
 
 const PORT = process.env.PORT || 4001;
 
