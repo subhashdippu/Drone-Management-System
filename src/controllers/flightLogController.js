@@ -1,7 +1,6 @@
 const FlightLog = require("../models/flightLog");
 const Mission = require("../models/Mission");
 const Drone = require("../models/Drone");
-const PDFDocument = require("pdfkit");
 const createFlightLog = async (req, res) => {
   const { flight_id, status, data } = req.body;
   const userId = req.user._id;
@@ -89,8 +88,34 @@ const updateFlightLog = async (req, res) => {
   }
 };
 
+const deleteFlightLog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const flightLog = await FlightLog.findById(id)
+      .populate("mission_id")
+      .populate("drone_id");
+
+    if (!flightLog) {
+      return res.status(404).json({ message: "Flight log not found" });
+    }
+
+    if (flightLog.mission_id.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You do not have permission to delete this flight log.",
+      });
+    }
+
+    await FlightLog.findByIdAndDelete(id);
+    res.json({ message: "Flight log deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting flight log", error });
+  }
+};
+
 module.exports = {
   createFlightLog,
   getFlightLogById,
   updateFlightLog,
+  deleteFlightLog,
 };
