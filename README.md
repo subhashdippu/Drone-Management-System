@@ -22,6 +22,43 @@ The Drone Management System is a web application that allows users to manage dro
 - Mongoose
 - PDFKit
 
+## Folder Structure
+
+```bash
+drone-management-system
+│
+├── src
+│   ├── config
+│   │    └── db.js
+│   │
+│   ├── controllers
+│   │    ├── authController.js
+│   │    ├── droneController.js
+│   │    ├── flightLogController.js
+│   │    └── missionController.js
+│   │
+│   ├── middleware
+│   │    └── authMiddleware.js
+│   │
+│   ├── models
+│   │    ├── Drone.js
+│   │    ├── flightLog.js
+│   │    ├── Mission.js
+│   │    └── User.js
+│   │
+│   └── routes
+│        ├── authRoutes.js
+│        ├── droneRoutes.js
+│        ├── flightLogRoutes.js
+│        └── missionRoutes.js
+│
+├── .env
+├── .gitignore
+├── package.json
+├── package-lock.json
+└── README.md
+```
+
 ## 🛠️ Installation Steps
 
 Star and Fork the Repo 🌟 and this will keep us motivated.
