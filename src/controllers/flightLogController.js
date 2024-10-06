@@ -113,9 +113,53 @@ const deleteFlightLog = async (req, res) => {
   }
 };
 
+const generatePDF = async (req, res) => {
+  const { flightId } = req.params;
+
+  try {
+    const flightLog = await FlightLog.findOne({ flight_id: flightId })
+      .populate("mission_id")
+      .populate("drone_id");
+
+    if (!flightLog) {
+      return res.status(404).json({ message: "Flight log not found" });
+    }
+
+    const doc = new PDFDocument();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${flightId}.pdf"`
+    );
+
+    doc.pipe(res);
+
+    doc
+      .fontSize(20)
+      .text(`Flight Log for Flight ID: ${flightId}`, { underline: true });
+    doc.moveDown();
+    doc.fontSize(12).text(`Mission Name: ${flightLog.mission_id.name}`);
+    doc.text(`Drone Name: ${flightLog.drone_id.name}`);
+    doc.text(`Status: ${flightLog.status}`);
+    doc.text(`Created At: ${flightLog.createdAt}`);
+    doc.moveDown();
+
+    for (const key in flightLog.data) {
+      if (flightLog.data.hasOwnProperty(key)) {
+        doc.text(`${key}: ${flightLog.data[key]}`);
+      }
+    }
+    doc.end();
+  } catch (error) {
+    res.status(500).json({ message: "Error generating PDF", error });
+  }
+};
+
 module.exports = {
   createFlightLog,
   getFlightLogById,
   updateFlightLog,
   deleteFlightLog,
+  generatePDF,
 };

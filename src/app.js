@@ -18,7 +18,7 @@ app.use("/drones", droneRoutes);
 app.use("/missions", missionRoutes);
 app.use("/flight-logs", flightLogRoutes);
 
-const PORT = process.env.PORT || 4002;
+const PORT = process.env.PORT || 4001;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
