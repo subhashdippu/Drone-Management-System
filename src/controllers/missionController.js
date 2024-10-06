@@ -13,7 +13,12 @@ const createMission = async (req, res) => {
         .status(404)
         .json({ message: "Drone not found or does not belong to the user" });
     }
-
+    const existingMission = await Mission.findOne({ name, user: userId });
+    if (existingMission) {
+      return res.status(400).json({
+        message: "Mission with this name already exists for the user",
+      });
+    }
     const mission = new Mission({
       user: userId,
       name,
@@ -99,30 +104,27 @@ const startMissionSimulation = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const mission = await Mission.find({ user: req.user._id });
-    if (mission.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No missions found for this user" });
-    }
+    const mission = await Mission.findById(id);
+
     if (!mission) {
       return res.status(404).json({ message: "Mission not found" });
     }
 
-    if (mission.simulation === "active") {
+    if (mission.user.toString() !== req.user._id.toString()) {
       return res
-        .status(400)
-        .json({ message: "Mission simulation is already active" });
+        .status(403)
+        .json({ message: "You are not authorized to start this mission" });
     }
 
     mission.simulation = "active";
     await mission.save();
 
-    res.json({ message: "Mission simulation started successfully", mission });
+    res.json({ message: "Mission simulation started", mission });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error starting mission simulation", error });
+    res.status(500).json({
+      message: "Error starting mission simulation",
+      error: error.message,
+    });
   }
 };
 
@@ -130,32 +132,27 @@ const stopMissionSimulation = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const mission = await Mission.find({ user: userId });
-
-    if (mission.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No missions found for this user" });
-    }
+    const mission = await Mission.findById(id);
 
     if (!mission) {
       return res.status(404).json({ message: "Mission not found" });
     }
 
-    if (mission.simulation === "closed") {
+    if (mission.user.toString() !== req.user._id.toString()) {
       return res
-        .status(400)
-        .json({ message: "Mission simulation is already closed" });
+        .status(403)
+        .json({ message: "You are not authorized to stop this mission" });
     }
 
     mission.simulation = "closed";
     await mission.save();
 
-    res.json({ message: "Mission simulation stopped successfully", mission });
+    res.json({ message: "Mission simulation stopped", mission });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error stopping mission simulation", error });
+    res.status(500).json({
+      message: "Error stopping mission simulation",
+      error: error.message,
+    });
   }
 };
 

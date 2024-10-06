@@ -1,6 +1,8 @@
 const FlightLog = require("../models/flightLog");
 const Mission = require("../models/Mission");
 const Drone = require("../models/Drone");
+const PDFDocument = require("pdfkit");
+
 const createFlightLog = async (req, res) => {
   const { flight_id, status, data } = req.body;
   const userId = req.user._id;

@@ -2,15 +2,26 @@ const Drone = require("../models/Drone");
 
 const createDrone = async (req, res) => {
   const { name, drone_type, make_name } = req.body;
-  const drone = new Drone({
-    created_by: req.user._id,
-    name,
-    drone_type,
-    make_name,
-  });
 
   try {
+    const existingDrone = await Drone.findOne({
+      name,
+      created_by: req.user._id,
+    });
+    if (existingDrone) {
+      return res
+        .status(400)
+        .json({ message: "Drone with this name already exists" });
+    }
+    const drone = new Drone({
+      created_by: req.user._id,
+      name,
+      drone_type,
+      make_name,
+    });
+
     await drone.save();
+
     res.status(201).json(drone);
   } catch (error) {
     res.status(500).json({ message: "Error creating drone", error });
